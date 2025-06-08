@@ -9,11 +9,10 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
+    GatewayIntentBits.MessageContent,
+  ],
 });
 
-// Komutları yükle
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -27,10 +26,15 @@ client.once('ready', () => {
   client.user.setActivity('beta v.1.0.0', { type: ActivityType.Watching });
 });
 
-client.on('messageCreate', message => {
+client.on('messageCreate', async (message) => {
   if (message.author.bot || !message.content.startsWith(prefix)) return;
 
-  db.incrementMessageCount(message.author.id, message.author.username);
+  // Kullanıcıyı db'de kayıt et ya da mesaj sayısını artır
+  try {
+    await db.incrementMessageCount(message.author.id, message.author.username);
+  } catch (err) {
+    console.error('Database error:', err);
+  }
 
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
@@ -39,9 +43,10 @@ client.on('messageCreate', message => {
   if (!command) return;
 
   try {
-    command.execute(message, args, db);
+    // Komutu çalıştırırken db ve client parametrelerini sırayla veriyoruz
+    await command.execute(message, args, db, client);
   } catch (error) {
-    console.error(error);
+    console.error('Command execution error:', error);
     message.reply('There was an error executing that command.');
   }
 });
