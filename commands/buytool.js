@@ -46,7 +46,7 @@ module.exports = {
 
             if (userMoney < selectedTool.price) {
                 // image_7132d0.png'deki gibi bir mesaj formatı
-                return message.reply(`${xxEmoji} You don't have enough money to buy **${selectedTool.name}**. You need ${selectedTool.price}$ but you have ${userMoney}$.`);
+                return message.reply(`${xxEmoji} You don't have enough money to buy **${selectedTool.name}**`);
             }
 
             const currentUserTool = await db.getUserTool(message.author.id);
@@ -74,7 +74,7 @@ module.exports = {
                 .setColor('#B1A4F6') // Yeşil renk
                 .setAuthor({ name: message.author.username, iconURL: message.author.displayAvatarURL({ dynamic: true }) })
                 .setDescription(
-                    `Successfully purchased ${toolEmoji} **${selectedTool.name}** for ${selectedTool.price}$.\n` +
+                    `✅ Successfully purchased ${toolEmoji} **${selectedTool.name}** for ${selectedTool.price}$.\n` +
                     `It has also been equipped automatically!`
                 );
             
