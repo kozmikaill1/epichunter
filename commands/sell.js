@@ -5,6 +5,7 @@ const xxEmoji = '<:xx:1381538571894259802>'; // Xx emojisi
 
 module.exports = {
     name: 'sell',
+    aliases: ['s'],
     description: 'Sells items from your inventory. Usage: ;sell <itemName> [amount] or ;sell all',
     async execute(message, args, db) {
         // Kullanım kontrolü

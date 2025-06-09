@@ -6,6 +6,7 @@ const xxEmoji = '<:xx:1381538571894259802>'; // Hata mesajları için xx emojisi
 
 module.exports = {
     name: 'value',
+    aliases: ['v'],
     description: 'Displays the total sell value of your or another user\'s inventory.',
     usage: ';value [mention/ID/username]',
     async execute(message, args, db) {
@@ -69,7 +70,7 @@ module.exports = {
 
             // Envanter boşsa veya satılabilir item yoksa özel mesaj
             if (inventoryValueDescription === '') {
-                inventoryValueDescription = 'No sellable items in inventory.';
+                inventoryValueDescription = 'No items in inventory.';
             }
 
             const username = targetUser.username;
