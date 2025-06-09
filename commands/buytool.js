@@ -71,7 +71,7 @@ module.exports = {
 
             // image_70bb8c.png ve image_70c5f8.png'deki gibi embed formatı
             const buySuccessEmbed = new EmbedBuilder()
-                .setColor('#00FF00') // Yeşil renk
+                .setColor('#B1A4F6') // Yeşil renk
                 .setAuthor({ name: message.author.username, iconURL: message.author.displayAvatarURL({ dynamic: true }) })
                 .setDescription(
                     `Successfully purchased ${toolEmoji} **${selectedTool.name}** for ${selectedTool.price}$.\n` +

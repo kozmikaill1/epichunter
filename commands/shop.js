@@ -60,7 +60,7 @@ module.exports = {
             }
 
             const shopEmbed = new EmbedBuilder()
-                .setColor('#0099FF')
+                .setColor('#B1A4F6')
                 .setTitle('Tool Shop') // Başlık
                 .setDescription(shopDescription); // Oluşturduğumuz tüm açıklamayı ekle
 

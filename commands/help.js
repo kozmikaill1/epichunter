@@ -32,7 +32,7 @@ module.exports = {
         const miscList = getCommandNames(miscCommands);
 
         const helpEmbed = new EmbedBuilder()
-            .setColor('#2F3136') 
+            .setColor('#B1A4F6') 
             .setTitle('Help Menu')
             .setDescription('Here are the available command categories:');
 

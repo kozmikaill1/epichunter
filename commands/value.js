@@ -76,7 +76,7 @@ module.exports = {
             const possessiveSuffix = username.endsWith('s') ? "'" : "'s";
 
             const valueEmbed = new EmbedBuilder()
-                .setColor('#0099FF')
+                .setColor('#B1A4F6')
                 .setTitle(`${username}${possessiveSuffix} Inventory Value`)
                 .setDescription(inventoryValueDescription)
                 .setFooter({ text: `Total value: $${totalValue}` }); // Toplam değeri her zaman göster

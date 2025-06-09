@@ -61,7 +61,7 @@ module.exports = {
         const dropEmoji = reward.drop_emoji || '';
 
         const huntEmbed = new EmbedBuilder()
-            .setColor('#7289DA')
+            .setColor('#B1A4F6')
             .setAuthor({ name: message.author.username, iconURL: message.author.displayAvatarURL({ dynamic: true }) })
             .setDescription(
                 `You hunted a ${reward.mob} ${mobEmoji} with your ${toolEmoji} and ` + // Kılıç ismi tamamen kalktı
