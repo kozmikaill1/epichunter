@@ -1,3 +1,8 @@
 node_modules/
 .env
 database.db
+setup-roles.js
+emote.js
+eval.js
+show.js
+edit.js
