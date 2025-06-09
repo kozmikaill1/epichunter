@@ -69,7 +69,7 @@ module.exports = {
 
             // Envanter boşsa veya satılabilir item yoksa özel mesaj
             if (inventoryValueDescription === '') {
-                inventoryValueDescription = 'No sellable items in inventory.';
+                inventoryValueDescription = 'No items in inventory.';
             }
 
             const username = targetUser.username;
