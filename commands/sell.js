@@ -22,7 +22,7 @@ module.exports = {
 
                 if (userInventoryArray.length === 0) {
                     // image_60ca76.png'deki "You have no items to sell!" mesajı
-                    return message.reply(`You have no items to sell!`);
+                    return message.reply(`${xxEmoji} You have no items to sell!`);
                 }
 
                 let totalMoneyGained = 0;
@@ -46,7 +46,7 @@ module.exports = {
                 if (totalMoneyGained > 0) {
                     await db.addMoney(message.author.id, totalMoneyGained);
                     // image_60ca76.png'deki "You sold all your items for $10" mesajı
-                    message.channel.send(`You sold all your items for $${totalMoneyGained}`);
+                    message.channel.send(`✅ You sold all your items for $${totalMoneyGained}`);
                 } else {
                     return message.reply(`${xxEmoji} You have no items to sell!`);
                 }
@@ -108,7 +108,7 @@ module.exports = {
             const itemEmoji = foundHunt ? foundHunt.drop_emoji : ''; 
             
             // image_60ca76.png'deki "You sold 1 :emoji: Raw Mutton for $12" mesajı
-            message.channel.send(`You sold ${amountToSell} ${itemEmoji} **${foundItemName}** for $${totalMoneyGained}!`);
+            message.channel.send(`✅ You sold ${amountToSell} ${itemEmoji} **${foundItemName}** for $${totalMoneyGained}!`);
 
         } catch (error) {
             console.error('Error selling item:', error);
