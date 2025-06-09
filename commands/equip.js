@@ -50,7 +50,7 @@ module.exports = {
             }
 
             await db.setUserTool(message.author.id, requestedToolName);
-            message.channel.send(`You have successfully equipped the **${requestedToolName}**!`);
+            message.channel.send(`✅ Successfully equipped the **${requestedToolName}**!`);
         } catch (error) {
             console.error('Error changing user tool:', error);
             message.reply(`${xxEmoji} An error occurred while trying to change your tool.`);
