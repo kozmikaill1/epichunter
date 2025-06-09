@@ -1,4 +1,5 @@
-// data/rewards.js - Lütfen bu kodu kopyalayıp dosyanı GÜNCELLE
+// data/rewards.js
+// Lütfen bu kodu kopyalayıp dosyanı GÜNCELLE
 module.exports = {
     // Mevcut rewards array'i burada kalacak, tools objesi içine taşınmadı
     hunts: [ //rewards array'inin adını "hunts" olarak değiştirdim, daha anlaşılır olur
@@ -68,32 +69,38 @@ module.exports = {
         "Fists": {
             price: 0,
             power: 1, // Ekstra bir özellik ekleyebiliriz (örneğin, avlanma şansı veya hasar için)
-            description: "Your bare hands. Not very effective."
+            description: "Your bare hands. Not very effective.",
+            emoji: '<:fists:1358407774979231857>' // Emoji eklendi
         },
         "Wooden Sword": {
             price: 50, // Fiyat ekledik
             power: 2,
-            description: "A simple wooden sword."
+            description: "A simple wooden sword.",
+            emoji: '<:wooden_sword:1357809232237433105>' // Emoji eklendi
         },
         "Stone Sword": {
             price: 150,
             power: 3,
-            description: "A sturdy stone sword."
+            description: "A sturdy stone sword.",
+            emoji: '<:stone_sword:1357809613780680724>' // Emoji eklendi
         },
         "Iron Sword": {
             price: 400,
             power: 4,
-            description: "A strong iron sword."
+            description: "A strong iron sword.",
+            emoji: '<:iron_sword:1357809672639484095>' // Emoji eklendi
         },
         "Gold Sword": {
             price: 800,
             power: 3, // Altın kılıç genellikle daha zayıf ama daha hızlı olabilir, burada sadece örnek
-            description: "A shiny, but not very durable, gold sword."
+            description: "A shiny, but not very durable, gold sword.",
+            emoji: '<:gold_sword:1357809717061095645>' // Emoji eklendi
         },
         "Diamond Sword": {
             price: 2000,
             power: 5,
-            description: "The most powerful sword."
+            description: "The most powerful sword.",
+            emoji: '<:diamond_sword:1357809760912802023>' // Emoji eklendi
         }
     }
 };

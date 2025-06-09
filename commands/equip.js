@@ -1,28 +1,59 @@
-// commands/tool.js
-const rewards = require('../data/rewards'); // Mevcut tool'ları rewards dosyasından al
+// commands/equip.js
+const rewardsData = require('../data/rewards.js');
+const tools = rewardsData.tools;
+const xxEmoji = '<:xx:1381538571894259802>'; // Xx emojisini buraya da ekleyelim
 
 module.exports = {
     name: 'equip',
-    description: 'Changes your equipped hunting tool. Usage: ;tool <tool_name>',
+    description: 'Changes your equipped hunting tool. Usage: ;equip <tool_name>',
     async execute(message, args, db) {
-        if (args.length !== 1) {
-            return message.reply('Incorrect usage. Correct usage: `;tool <tool_name>`');
+        // Eğer hiç argüman verilmezse, sadece kısa kullanım hatası
+        if (args.length === 0) {
+            return message.reply(`${xxEmoji} Incorrect usage. Correct usage: \`;equip <tool_name>\``);
         }
 
-        const requestedTool = args[0];
+        const requestedToolInput = args.join(' ').toLowerCase();
+        let requestedToolName = null;
 
-        // rewards dosyasındaki tool'lar arasında var mı diye kontrol et
-        const availableTools = rewards.map(r => r.tool);
-        if (!availableTools.includes(requestedTool)) {
-            return message.reply(`'${requestedTool}' is not a valid tool. Available tools: ${availableTools.join(', ')}`);
+        for (const toolKey in tools) {
+            if (toolKey.toLowerCase() === requestedToolInput) {
+                requestedToolName = toolKey;
+                break;
+            }
+        }
+
+        // Eğer istenen tool geçerli bir tool değilse, sadece kısa hata mesajı
+        if (!requestedToolName) {
+            return message.reply(`${xxEmoji} That tool is not valid or available.`);
         }
 
         try {
-            await db.setUserTool(message.author.id, requestedTool);
-            message.channel.send(`You have successfully equipped the **${requestedTool}**!`);
+            const userTool = await db.getUserTool(message.author.id);
+            const userInventoryArray = await db.getUserInventory(message.author.id);
+
+            // Envanteri kolayca erişilebilir bir nesneye dönüştürelim
+            const userInventory = {};
+            for (const item of userInventoryArray) {
+                userInventory[item.itemName] = item.quantity;
+            }
+
+            // Kullanıcının bu tool'a sahip olup olmadığını kontrol et
+            if (requestedToolName === 'Fists') {
+                 // Fists'i direkt takmasına izin ver
+            } else if (!userInventory[requestedToolName] || userInventory[requestedToolName] < 1) {
+                return message.reply(`${xxEmoji} You don't own a **${requestedToolName}** to equip.`);
+            }
+
+            // Zaten aynı tool takılıysa
+            if (userTool.toLowerCase() === requestedToolName.toLowerCase()) {
+                return message.reply(`${xxEmoji} You already have **${requestedToolName}** equipped.`);
+            }
+
+            await db.setUserTool(message.author.id, requestedToolName);
+            message.channel.send(`You have successfully equipped the **${requestedToolName}**!`);
         } catch (error) {
             console.error('Error changing user tool:', error);
-            message.reply('An error occurred while trying to change your tool.');
+            message.reply(`${xxEmoji} An error occurred while trying to change your tool.`);
         }
     },
 };
