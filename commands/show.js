@@ -20,29 +20,29 @@ module.exports = {
         let targetUserId;
 
         // Determine if the target is an ID or a username
-        if (targetIdentifier.match(/^\d+$/)) { // If it consists only of digits, it's an ID
-            targetUserId = targetIdentifier;
-        } else { // Otherwise, treat it as a username and try to find the ID
-            const member = message.guild.members.cache.find(m => m.user.username.toLowerCase() === targetIdentifier.toLowerCase() || m.displayName.toLowerCase() === targetIdentifier.toLowerCase());
-            if (!member) {
-                return message.reply(`Could not find a user named '${targetIdentifier}'.`);
+        try {
+            if (targetIdentifier.match(/^\d+$/)) { // If it consists only of digits, it's an ID
+                targetUserId = targetIdentifier;
+            } else { // Otherwise, treat it as a username and try to find the ID
+                const member = await message.guild.members.fetch({ query: targetIdentifier, limit: 1 })
+                    .then(collection => collection.first())
+                    .catch(() => null);
+
+                if (!member) {
+                    return message.reply(`Could not find a user named '${targetIdentifier}'.`);
+                }
+                targetUserId = member.id;
             }
-            targetUserId = member.id;
+        } catch (fetchError) {
+            console.error('Error fetching member in show command:', fetchError);
+            return message.reply('An error occurred while trying to find the user.');
         }
 
         try {
-            // Fetch all user data
-            const userData = await new Promise((resolve, reject) => {
-                db.db.get(`SELECT * FROM users WHERE id = ?`, [targetUserId], (err, row) => {
-                    if (err) {
-                        console.error('Database get error in show command:', err);
-                        return reject(err);
-                    }
-                    resolve(row);
-                });
-            });
+            // Kullanıcının tüm verisini çekmek için db.getUser fonksiyonunu kullanıyoruz
+            const userData = await db.getUser(targetUserId);
 
-            if (!userData) {
+            if (!userData) { // Eğer userData null veya undefined ise, kullanıcı veritabanında yoktur
                 return message.channel.send(`**${targetIdentifier}** user not found in the database.`);
             }
 

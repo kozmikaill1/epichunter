@@ -21,14 +21,22 @@ module.exports = {
         let targetUserId;
 
         // Determine if the target is an ID or a username
-        if (targetIdentifier.match(/^\d+$/)) {
-            targetUserId = targetIdentifier;
-        } else {
-            const member = message.guild.members.cache.find(m => m.user.username.toLowerCase() === targetIdentifier.toLowerCase() || m.displayName.toLowerCase() === targetIdentifier.toLowerCase());
-            if (!member) {
-                return message.reply(`Could not find a user named '${targetIdentifier}'.`);
+        try {
+            if (targetIdentifier.match(/^\d+$/)) {
+                targetUserId = targetIdentifier;
+            } else {
+                const member = await message.guild.members.fetch({ query: targetIdentifier, limit: 1 })
+                    .then(collection => collection.first())
+                    .catch(() => null);
+
+                if (!member) {
+                    return message.reply(`Could not find a user named '${targetIdentifier}'.`);
+                }
+                targetUserId = member.id;
             }
-            targetUserId = member.id;
+        } catch (fetchError) {
+            console.error('Error fetching member in edit command:', fetchError);
+            return message.reply('An error occurred while trying to find the user.');
         }
 
         // Validate the setting name to prevent SQL Injection or editing 'id'/'username'
@@ -38,34 +46,19 @@ module.exports = {
         }
 
         try {
-            // Check if the user exists first
-            const userExists = await new Promise((resolve, reject) => {
-                db.db.get(`SELECT id FROM users WHERE id = ?`, [targetUserId], (err, row) => {
-                    if (err) return reject(err);
-                    resolve(!!row); // Returns true if row exists, false otherwise
-                });
-            });
+            // Kullanıcının varlığını db.getUser fonksiyonu ile kontrol edin
+            const userData = await db.getUser(targetUserId);
 
-            if (!userExists) {
+            if (!userData) { // Eğer userData null veya undefined ise, kullanıcı veritabanında yoktur
                 return message.channel.send(`**${targetIdentifier}** user not found in the database. Cannot edit.`);
             }
 
-            // Database update query
-            await new Promise((resolve, reject) => {
-                db.db.run(`UPDATE users SET ${settingToEdit} = ? WHERE id = ?`, [newValue, targetUserId], function(err) {
-                    if (err) {
-                        console.error('Database update error in edit command:', err);
-                        return reject(err);
-                    }
-                    if (this.changes === 0) {
-                        // This might happen if user exists but somehow update failed (e.g., no actual change)
-                        // Or if the initial select check was somehow race-conditioned (less likely)
-                        resolve('no_change');
-                    } else {
-                        resolve('success');
-                    }
-                });
-            });
+            // Database update query (db.updateUserSetting fonksiyonunu kullan)
+            const changes = await db.updateUserSetting(targetUserId, settingToEdit, newValue);
+
+            if (changes === 0) {
+                 return message.channel.send(`**${targetIdentifier}**'s **${settingToEdit}** was already **${newValue}**, no changes made.`);
+            }
 
             message.channel.send(`Successfully updated **${targetIdentifier}**'s **${settingToEdit}** to **${newValue}**.`);
 
