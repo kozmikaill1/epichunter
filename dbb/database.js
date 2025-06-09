@@ -188,6 +188,36 @@ function updateUserSetting(userId, settingName, newValue) {
     });
 }
 
+// Yeni eklenen fonksiyon: Kullanıcının tüm verilerini sıfırlar
+function resetUserData(userId) {
+    return new Promise((resolve, reject) => {
+        db.serialize(() => {
+            // Kullanıcının bakiyesini, exp, level, messages, tool'unu sıfırla
+            db.run(
+                `UPDATE users SET money = 0, exp = 0, level = 1, messages = 0, tool = 'Fists' WHERE id = ?`,
+                [userId],
+                function(err) {
+                    if (err) {
+                        console.error('Error resetting user stats:', err.message);
+                        return reject(err);
+                    }
+                    console.log(`User ${userId} stats reset.`);
+                }
+            );
+
+            // Kullanıcının envanterini sıfırla (tüm itemları sil)
+            db.run(`DELETE FROM items WHERE userId = ?`, [userId], function(err) {
+                if (err) {
+                    console.error('Error resetting user inventory:', err.message);
+                    return reject(err);
+                }
+                console.log(`User ${userId} inventory reset.`);
+                resolve(); // Tüm işlemler bittiğinde resolve et
+            });
+        });
+    });
+}
+
 
 module.exports = {
     init,
@@ -203,5 +233,6 @@ module.exports = {
     getUserTool,
     setUserTool,
     getUser, // show komutu için
-    updateUserSetting // edit komutu için yeni fonksiyon
+    updateUserSetting, // edit komutu için yeni fonksiyon
+    resetUserData // Yeni eklenen sıfırlama fonksiyonu
 };

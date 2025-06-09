@@ -74,7 +74,7 @@ module.exports = {
                 .setColor('#B1A4F6') // Yeşil renk
                 .setAuthor({ name: message.author.username, iconURL: message.author.displayAvatarURL({ dynamic: true }) })
                 .setDescription(
-                    `Successfully purchased ${toolEmoji} **${selectedTool.name}** for ${selectedTool.price}$.\n` +
+                    `✅ Successfully purchased ${toolEmoji} **${selectedTool.name}** for ${selectedTool.price}$.\n` +
                     `It has also been equipped automatically!`
                 );
             
