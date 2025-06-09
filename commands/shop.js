@@ -21,7 +21,7 @@ module.exports = {
             let shopDescription = `Balance: $${userMoney}\n`; // Bakiye bilgisi
             // Current Tool'un emojisini rewards.js'den çekiyoruz
             const currentToolEmoji = tools[currentUserTool]?.emoji || ''; 
-            shopDescription += `Current Tool: ${currentToolEmoji} **${currentUserTool}**\n\n`; // Mevcut araç bilgisi
+            shopDescription += `Current Tool: ${currentToolEmoji} ${currentUserTool}\n\n`; // Mevcut araç bilgisi
 
             // Resimdeki sıraya göre manuel olarak kılıçları listeleyelim
             const swordOrder = [
