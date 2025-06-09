@@ -9,7 +9,7 @@ module.exports = {
     async execute(message, args, db) {
         // Eğer hiç argüman verilmezse, sadece kısa kullanım hatası
         if (args.length === 0) {
-            return message.reply(`${xxEmoji} Incorrect usage. Correct usage: \`;equip <tool_name>\``);
+            return message.reply(`${xxEmoji} Enter tool name.`);
         }
 
         const requestedToolInput = args.join(' ').toLowerCase();
@@ -24,7 +24,7 @@ module.exports = {
 
         // Eğer istenen tool geçerli bir tool değilse, sadece kısa hata mesajı
         if (!requestedToolName) {
-            return message.reply(`${xxEmoji} That tool is not valid or available.`);
+            return message.reply(`${xxEmoji} Could not find any tool with that name.`);
         }
 
         try {
@@ -41,7 +41,7 @@ module.exports = {
             if (requestedToolName === 'Fists') {
                  // Fists'i direkt takmasına izin ver
             } else if (!userInventory[requestedToolName] || userInventory[requestedToolName] < 1) {
-                return message.reply(`${xxEmoji} You don't own a **${requestedToolName}** to equip.`);
+                return message.reply(`${xxEmoji} You don't own this tool!`);
             }
 
             // Zaten aynı tool takılıysa

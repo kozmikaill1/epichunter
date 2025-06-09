@@ -9,7 +9,8 @@ module.exports = {
     async execute(message, args, db) {
         // Kullanım kontrolü
         if (args.length < 1) {
-            return message.reply(`${xxEmoji} Incorrect usage. Correct usage: \`;sell <itemName> [amount]\` or \`;sell all\``);
+            // image_719c10.png'deki gibi "Incorrect usage. Correct usage: ;sell <itemName> [amount]"
+            return message.reply(`Incorrect usage. Correct usage: \`;sell <itemName> [amount]\` or \`;sell all\``);
         }
 
         const firstArg = args[0].toLowerCase();
@@ -20,7 +21,8 @@ module.exports = {
                 const userInventoryArray = await db.getUserInventory(message.author.id);
 
                 if (userInventoryArray.length === 0) {
-                    return message.reply(`${xxEmoji} You have no items to sell!`);
+                    // image_60ca76.png'deki "You have no items to sell!" mesajı
+                    return message.reply(`You have no items to sell!`);
                 }
 
                 let totalMoneyGained = 0;
@@ -43,10 +45,10 @@ module.exports = {
 
                 if (totalMoneyGained > 0) {
                     await db.addMoney(message.author.id, totalMoneyGained);
-                    // Başarılı satış mesajı
-                    message.channel.send(`You sold your entire inventory for ${totalMoneyGained}💰!`);
+                    // image_60ca76.png'deki "You sold all your items for $10" mesajı
+                    message.channel.send(`You sold all your items for $${totalMoneyGained}`);
                 } else {
-                    return message.reply(`${xxEmoji} You have no sellable items in your inventory.`);
+                    return message.reply(`${xxEmoji} You have no items to sell!`);
                 }
 
             } catch (error) {
@@ -101,9 +103,12 @@ module.exports = {
             await db.addMoney(message.author.id, totalMoneyGained);
 
             // Item emojisini bulma
-            const itemEmoji = rewards.hunts.find(r => r.dropped_items && r.dropped_items[foundItemName])?.dropped_items[foundItemName].emoji || '';
+            // rewards.hunts array'indeki 'drop' ve 'drop_emoji' kullanılıyor
+            const foundHunt = rewards.hunts.find(hunt => hunt.drop === foundItemName);
+            const itemEmoji = foundHunt ? foundHunt.drop_emoji : ''; 
             
-            message.channel.send(`You successfully sold ${amountToSell} ${itemEmoji} **${foundItemName}** for ${totalMoneyGained}$!`);
+            // image_60ca76.png'deki "You sold 1 :emoji: Raw Mutton for $12" mesajı
+            message.channel.send(`You sold ${amountToSell} ${itemEmoji} **${foundItemName}** for $${totalMoneyGained}!`);
 
         } catch (error) {
             console.error('Error selling item:', error);
