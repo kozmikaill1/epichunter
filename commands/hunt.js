@@ -24,7 +24,7 @@ module.exports = {
             if (currentTime < expirationTime) {
                 const timeLeft = (expirationTime - currentTime) / 1000;
                 const xxEmoji = '<:xx:1381538571894259802>'; 
-                return message.reply(`${xxEmoji} You must wait ${timeLeft.toFixed(1)}s before hunting again.`);
+                return message.reply(`${xxEmoji} You must wait **${timeLeft.toFixed(1)}**s before hunting again.`);
             }
         }
 
