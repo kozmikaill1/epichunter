@@ -58,7 +58,7 @@ module.exports = {
             
             // Başarılı mesajına tool emojisini ekle
             const toolEmoji = getToolEmoji(requestedToolName);
-            message.channel.send(`✅ Successfully equipped the **${requestedToolName}** ${toolEmoji}!`);
+            message.channel.send(`✅ Successfully equipped the ${toolEmoji} **${requestedToolName}**!`);
         } catch (error) {
             console.error('Error changing user tool:', error);
             message.reply(`${xxEmoji} An error occurred while trying to change your tool.`);
