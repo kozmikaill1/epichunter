@@ -69,7 +69,7 @@ module.exports = {
         const dropEmoji = reward.drop_emoji || '';
 
         let description = `You hunted a ${reward.mob} ${mobEmoji} with your ${toolEmoji} and ` +
-                          `received ${gainedExp} ${expEmoji} and ${droppedQuantity} ${dropEmoji} .`;
+                          `received ${gainedExp} ${expEmoji} and ${droppedQuantity} ${dropEmoji} `;
 
         // Sadece level atlandığında mesajı ekle
         if (xpResult.levelUp) {
