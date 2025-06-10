@@ -94,7 +94,7 @@ module.exports = {
                 return `${emoji} ${item.itemName}: ${item.quantity}`;
             }).join('\n');
         } else {
-            inventoryDescription = 'Your inventory is empty.';
+            inventoryDescription = 'inventory is empty.';
         }
 
         let specialInventoryDescription = '';
