@@ -132,7 +132,7 @@ module.exports = {
 
         if (specialItems.length > 0 || specialInventoryDescription !== 'You have no special items.') {
             profileEmbed.addFields(
-                { name: 'Special Items', value: specialInventoryDescription, inline: false }
+                { name: 'Special', value: specialInventoryDescription, inline: false }
             );
         }
 
