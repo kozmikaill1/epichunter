@@ -1,4 +1,4 @@
-// database.js
+// database.js - Lütfen bu kodu kopyalayıp dosyanı GÜNCELLE
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./epichunter.db'); // Veritabanı dosyasının adı
 
@@ -14,6 +14,7 @@ function init() {
             money INTEGER DEFAULT 0,
             level INTEGER DEFAULT 1,
             exp INTEGER DEFAULT 0
+            -- lastDaily INTEGER DEFAULT 0 // Eğer lastDaily alanınız varsa ekleyin
         )`);
 
         // items tablosu (kullanıcı envanteri)
@@ -62,16 +63,6 @@ function setUserTool(userId, toolName) {
 function addMessages(userId, amount) {
     return new Promise((resolve, reject) => {
         db.run(`UPDATE users SET messages = messages + ? WHERE id = ?`, [amount, userId], function(err) {
-            if (err) return reject(err);
-            resolve();
-        });
-    });
-}
-
-// XP ekle
-function addExp(userId, amount) {
-    return new Promise((resolve, reject) => {
-        db.run(`UPDATE users SET exp = exp + ? WHERE id = ?`, [amount, userId], function(err) {
             if (err) return reject(err);
             resolve();
         });
@@ -176,23 +167,20 @@ function getUser(userId) {
     });
 }
 
-// Yeni eklenen fonksiyon: Kullanıcının belirli bir ayarını günceller (edit komutu için)
+// Kullanıcının belirli bir ayarını günceller (edit komutu için)
 function updateUserSetting(userId, settingName, newValue) {
     return new Promise((resolve, reject) => {
-        // settingName'in güvenli olduğundan emin ol (SQL Injection'ı önlemek için)
-        // Normalde burada bir whitelist kontrolü yapılırdı
         db.run(`UPDATE users SET ${settingName} = ? WHERE id = ?`, [newValue, userId], function(err) {
             if (err) return reject(err);
-            resolve(this.changes); // Kaç satırın etkilendiğini döner (1 veya 0)
+            resolve(this.changes);
         });
     });
 }
 
-// Yeni eklenen fonksiyon: Kullanıcının tüm verilerini sıfırlar
+// Kullanıcının tüm verilerini sıfırlar
 function resetUserData(userId) {
     return new Promise((resolve, reject) => {
         db.serialize(() => {
-            // Kullanıcının bakiyesini, exp, level, messages, tool'unu sıfırla
             db.run(
                 `UPDATE users SET money = 0, exp = 0, level = 1, messages = 0, tool = 'Fists' WHERE id = ?`,
                 [userId],
@@ -205,25 +193,80 @@ function resetUserData(userId) {
                 }
             );
 
-            // Kullanıcının envanterini sıfırla (tüm itemları sil)
             db.run(`DELETE FROM items WHERE userId = ?`, [userId], function(err) {
                 if (err) {
                     console.error('Error resetting user inventory:', err.message);
                     return reject(err);
                 }
                 console.log(`User ${userId} inventory reset.`);
-                resolve(); // Tüm işlemler bittiğinde resolve et
+                resolve();
+            });
+        });
+    });
+}
+
+// Her level için gereken XP'yi hesaplayan yardımcı fonksiyon
+function getExpForNextLevel(level) {
+    // Örnek formül: level 1'den 2'ye 100 XP, sonra her level için +50 XP
+    // Level 2 için: 100 XP
+    // Level 3 için: 100 + 50 = 150 XP
+    // Level 4 için: 150 + 50 + 50 = 200 XP
+    return 50 * level + 50;
+}
+
+
+// XP ekle ve level atlama kontrolü yap
+async function addExpAndCheckLevelUp(userId, username, amount) {
+    return new Promise((resolve, reject) => {
+        db.get(`SELECT exp, level FROM users WHERE id = ?`, [userId], (err, row) => {
+            if (err) {
+                console.error('Error fetching user exp/level:', err);
+                return reject(err);
+            }
+
+            let currentExp = row ? row.exp : 0;
+            let currentLevel = row ? row.level : 1;
+            let newExp = currentExp + amount;
+            let levelUp = false;
+            let earnedAdalium = 0;
+
+            // Bu döngüde, her level atlandığında ulaşılan yeni level kadar Adalium ekleyeceğiz
+            // Önceki level'ın XP'sini düşerek doğru XP ilerlemesini sağlıyoruz.
+            while (newExp >= getExpForNextLevel(currentLevel)) {
+                currentLevel++; // Yeni level'a geçtik
+                levelUp = true;
+                earnedAdalium += currentLevel; // <<< DEĞİŞİKLİK BURADA: Ulaşılan level kadar Adalium verir
+                newExp -= getExpForNextLevel(currentLevel - 1); // Önceki level için gereken XP'yi düş
+            }
+
+            db.run(`UPDATE users SET exp = ?, level = ? WHERE id = ?`, [newExp, currentLevel, userId], async function(err) {
+                if (err) {
+                    console.error('Error updating user exp/level:', err);
+                    return reject(err);
+                }
+
+                if (levelUp && earnedAdalium > 0) {
+                    try {
+                        await addItem(userId, 'Adalium', earnedAdalium);
+                        resolve({ levelUp: levelUp, newLevel: currentLevel, remainingExp: newExp, earnedAdalium: earnedAdalium });
+                    } catch (itemErr) {
+                        console.error('Error adding Adalium item during level up:', itemErr);
+                        resolve({ levelUp: levelUp, newLevel: currentLevel, remainingExp: newExp, earnedAdalium: 0, itemError: true });
+                    }
+                } else {
+                    resolve({ levelUp: levelUp, newLevel: currentLevel, remainingExp: newExp, earnedAdalium: earnedAdalium });
+                }
             });
         });
     });
 }
 
 
+// dbb/database.js - Bu kısmı kontrol et
 module.exports = {
     init,
     ensureUser,
     addMessages,
-    addExp,
     addMoney,
     getUserMoney,
     addItem,
@@ -232,7 +275,9 @@ module.exports = {
     getUserInventory,
     getUserTool,
     setUserTool,
-    getUser, // show komutu için
-    updateUserSetting, // edit komutu için yeni fonksiyon
-    resetUserData // Yeni eklenen sıfırlama fonksiyonu
+    getUser,
+    updateUserSetting,
+    resetUserData,
+    addExpAndCheckLevelUp,
+    getExpForNextLevel, // <<< BU SATIRIN OLDUĞUNDAN KESİNLİKLE EMİN OLUN!
 };

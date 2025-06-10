@@ -27,6 +27,11 @@ module.exports = {
             return message.reply(`${xxEmoji} Could not find any tool with that name.`);
         }
 
+        // Helper fonksiyon: Tool adına göre emoji bulur
+        const getToolEmoji = (toolName) => {
+            return rewardsData.tools[toolName]?.emoji || '⚔️'; // tools objesinden emojiyi çeker, bulamazsa varsayılan verir
+        };
+
         try {
             const userTool = await db.getUserTool(message.author.id);
             const userInventoryArray = await db.getUserInventory(message.author.id);
@@ -39,7 +44,7 @@ module.exports = {
 
             // Kullanıcının bu tool'a sahip olup olmadığını kontrol et
             if (requestedToolName === 'Fists') {
-                 // Fists'i direkt takmasına izin ver
+                // Fists'i direkt takmasına izin ver
             } else if (!userInventory[requestedToolName] || userInventory[requestedToolName] < 1) {
                 return message.reply(`${xxEmoji} You don't own this tool!`);
             }
@@ -50,7 +55,10 @@ module.exports = {
             }
 
             await db.setUserTool(message.author.id, requestedToolName);
-            message.channel.send(`✅ Successfully equipped the **${requestedToolName}**!`);
+            
+            // Başarılı mesajına tool emojisini ekle
+            const toolEmoji = getToolEmoji(requestedToolName);
+            message.channel.send(`✅ Successfully equipped the **${requestedToolName}** ${toolEmoji}!`);
         } catch (error) {
             console.error('Error changing user tool:', error);
             message.reply(`${xxEmoji} An error occurred while trying to change your tool.`);

@@ -17,7 +17,7 @@ module.exports = {
         sellPrice: 25
     },
     "String": {
-        sellPrice: 3
+        sellPrice: 30
     },
     "Ender Pearl": {
         sellPrice: 40
