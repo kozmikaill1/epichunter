@@ -35,7 +35,7 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
     console.log(`Bot is online as ${client.user.tag}`);
-    client.user.setActivity('beta v.1.0.3', { type: ActivityType.Watching });
+    client.user.setActivity('Kedyland', { type: ActivityType.WATCHING });
 
     db.init();
 });
