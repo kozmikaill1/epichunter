@@ -21,7 +21,7 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 // Komutları yükleme
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
-    // Komut adını anahtar olarak ayarla
+    // Komut adını anahtar olarak ayarlaa
     client.commands.set(command.name, command);
 
     // Eğer komutun aliases özelliği varsa (ve bir dizi ise)
